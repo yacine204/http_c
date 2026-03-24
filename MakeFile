@@ -1,0 +1,9 @@
+CC = gcc
+TARGET = server
+SRCS = server.c handlers/req_handler.c
+
+$(TARGET): $(SRCS)
+	$(CC) -o $(TARGET) $(SRCS)
+
+clean:
+	rm -f $(TARGET)
