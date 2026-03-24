@@ -1,4 +1,4 @@
-# Cerver
+# http_c
 
 Tiny C HTTP server that accepts a single connection at a time on port 8080, parses the incoming HTTP request, and returns a fixed plain-text response.
 
