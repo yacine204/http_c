@@ -4,7 +4,13 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+
 #include "include/request.h"
+#include "include/header.h"
+#include "include/body.h"
+#include "include/response.h"
+
+
 int main(){
 
     char BUFFER[1024];

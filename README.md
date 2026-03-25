@@ -10,7 +10,7 @@ make
 ```
 
 - Listens on `0.0.0.0:8080`.
-- Sends `HTTP/1.1 200 OK` with a short text body, (sends body rigth back at u if u included one).
+- Sends `HTTP/1.1 200 OK` with a short text body (sends body rigth back at u if u included one).
 
 ## Project Layout
 
