@@ -11,13 +11,16 @@
 struct RESPONSE handle_response(struct REQUEST request){
     struct RESPONSE generated_response;
     //security verification
+
     if(strcmp(request.request_line.path,"..")==0){
-        generated_response.response_status_line.response_status= 403;
-        strcpy(generated_response.response_status_line.status_message,"not allowed");
-        strcpy(generated_response.body.data, "nice try bozo!");
-        struct HEADER response_header = *generated_response.response_headers;
+        struct STATUS_LINE generated_status_line;
+        struct HEADER response_header;
+        struct BODY generated_body;
+
+        generated_status_line = generate_response_status_line("Forbidden", "403");
         header_generator(&response_header, "Content-Type", "plain text");
-        return generated_response;
+        strcpy(generated_body.data, "nice try bozo!");
+        return generate_response(generated_status_line, response_header, generated_body);
     }
 
     char *request_method = request.request_line.method;
@@ -67,7 +70,7 @@ struct RESPONSE get_handler(struct REQUEST request){
 
     struct RESPONSE generated_response;
 
-    struct REQUEST_LINE *request_line = request.request_line;
+    struct REQUEST_LINE *request_line = &request.request_line;
     struct HEADER *request_headers = request.headers_section;
 
     struct STATUS_LINE generated_status_line;
