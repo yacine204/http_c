@@ -1,5 +1,5 @@
-#ifndef RESPONSE_STATUS_LINE.H
-#define RESPONSE_STATUS_LINE.H
+#ifndef RESPONSE_STATUS_LINE_H
+#define RESPONSE_STATUS_LINE_H
 
 struct STATUS_LINE {
     char protocol_version[32];

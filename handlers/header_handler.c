@@ -4,8 +4,9 @@
 
 #include "include/header.h"
 
-void header_generator(struct HEADER *header, char* header_name, char* header_value){
+struct HEADER header_generator(char* header_name, char* header_value, int number_of_headers){
     struct HEADER header;
-    strcpy(header->header_name, header_name);
-    strcpy(header->header_value, header_value);
+    strncpy(header.header_name, header_name, sizeof(header.header_name) - 1);
+    strncpy(header.header_value, header_value, sizeof(header.header_value) - 1);
+    return header;
 }
