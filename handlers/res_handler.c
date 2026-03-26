@@ -7,6 +7,7 @@
 #include "include/response.h"
 #include "include/request.h"
 #include "include/header.h"
+#include "include/routing.h"
 
 struct RESPONSE handle_response(struct REQUEST request){
 
@@ -33,7 +34,8 @@ struct RESPONSE handle_response(struct REQUEST request){
         return delete_handler(request);
     }
     else if(strcmp(request_method, "PUT")==0){
-        return put_handler(request);
+        //return put_handler(request);
+        return routing(request);
     }
     else {
         struct STATUS_LINE generated_status_line;
@@ -64,15 +66,31 @@ struct RESPONSE get_handler(struct REQUEST request){
     struct HEADER generated_header;
     struct BODY generated_body;
 
+    /* Serve files from ./assets. Root ("/") maps to ./assets/index.html */
+    char full_path[512];
+    char *req_path = request_line->path;
+
+    if(req_path[0] == '/') req_path++;
+
+    if(req_path[0] == '\0')
+        snprintf(full_path, sizeof(full_path), "./assets/index.html");
+    else
+        snprintf(full_path, sizeof(full_path), "./assets/%s", req_path);
+
+    /* Basic content-type detection */
+    char *ext = strrchr(full_path, '.');
+    if(ext && strcmp(ext, ".html") == 0)
+        generated_header = header_generator("Content-Type", "text/html", 1);
+    else if(ext && strcmp(ext, ".js") == 0)
+        generated_header = header_generator("Content-Type", "application/javascript", 1);
+    else if(ext && strcmp(ext, ".css") == 0)
+        generated_header = header_generator("Content-Type", "text/css", 1);
+    else
+        generated_header = header_generator("Content-Type", "plain text", 1);
+
     generated_status_line = generate_response_status_line("OK", 200);
-    generated_header = header_generator("Content-Type", "plain text", 1);
 
-    if(strcmp(request_line->path, "/") == 0){
-        strcpy(generated_body.data, "Goodbye, world!");
-        return generate_response(generated_status_line, generated_header, generated_body);
-    }
-
-    FILE *file = fopen(request_line->path, "r");
+    FILE *file = fopen(full_path, "r");
     if(!file){
         generated_status_line = generate_response_status_line("Not Found", 404);
         strcpy(generated_body.data, "file not found, try same api with post!");

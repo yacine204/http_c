@@ -3,7 +3,7 @@
 
 
 struct BODY {
-    char data[1024];
+    char data[65536];
 };
 
 

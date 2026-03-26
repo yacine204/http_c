@@ -1,6 +1,11 @@
 # http_c
 A lightweight HTTP server written in C from scratch. Listens on port 8080, parses incoming HTTP requests, and routes them to the appropriate handler.
 
+# PREVIEW
+/ route render:
+<video src="/showcase/Screencast from 2026-03-26 16-44-01.webm" controls width="480"></video>
+penger from: https://github.com/tsoding/formula
+
 ## Build and Run
 make
 ./server
