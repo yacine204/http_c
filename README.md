@@ -34,3 +34,7 @@ curl -X POST http://localhost:8080/test.txt -d "hello!"
 # GET the file back
 curl http://localhost:8080/test.txt
 ```
+
+## TODO
+- [ ] make it handle many requests using threads or fork().
+- [ ] add static file routing.
