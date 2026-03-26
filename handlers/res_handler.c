@@ -110,31 +110,24 @@ struct RESPONSE post_handler(struct REQUEST request){
     struct HEADER generated_headers;
     struct BODY generated_body;
 
-    char clean_path[256];
-    strncpy(clean_path, request.request_line.path, sizeof(clean_path) - 1);
-    clean_path[sizeof(clean_path) - 1] = '\0';
+    // build full path
+    char full_path[512];
+    snprintf(full_path, sizeof(full_path), "%s", request.request_line.path + 1);
+    printf("final path for fopen: '%s'\n", full_path);
 
-    char *path = clean_path;
-    
-    if(path[0] == '/') path++;
-    
-    printf("final path for fopen: '%s'\n", path);
-    
     generated_headers = header_generator("Content-Type", "plain text", 1);
 
-    FILE *file = fopen(request.request_line.path, "a");
+    FILE *file = fopen(full_path, "a");
     if(!file){
         strcpy(generated_body.data, "file couldn't be created, verify the path");
-        printf("fopen result: %p\n", file);
         printf("errno: %d - %s\n", errno, strerror(errno));
         generated_status_line = generate_response_status_line("Not Found", 404);
         return generate_response(generated_status_line, generated_headers, generated_body);
     }
-    
     fprintf(file, "%s", request.body.data);
     fclose(file);
 
-    file = fopen(request.request_line.path, "r");
+    file = fopen(full_path, "r");
     if(!file){
         strcpy(generated_body.data, "couldn't re-open file for reading");
         generated_status_line = generate_response_status_line("Internal Server Error", 500);
@@ -162,7 +155,7 @@ struct RESPONSE post_handler(struct REQUEST request){
     buffer[read_size] = '\0';
     fclose(file);
 
-    int msg_len = snprintf(NULL, 0, "from '%s': ", request.request_line.path);
+    int msg_len = snprintf(NULL, 0, "from '%s': ", full_path);
     char *return_message = malloc(msg_len + 1);
     if(!return_message){
         free(buffer);
@@ -170,7 +163,7 @@ struct RESPONSE post_handler(struct REQUEST request){
         generated_status_line = generate_response_status_line("Internal Server Error", 500);
         return generate_response(generated_status_line, generated_headers, generated_body);
     }
-    snprintf(return_message, msg_len + 1, "from '%s': ", request.request_line.path);
+    snprintf(return_message, msg_len + 1, "from '%s': ", full_path);
 
     int response_len = snprintf(NULL, 0, "%s...%s", return_message, buffer);
     char *response = malloc(response_len + 1);
@@ -199,9 +192,24 @@ struct RESPONSE put_handler(struct REQUEST request){
     struct HEADER generated_header;
     struct BODY generated_body;
 
-    generated_status_line = generate_response_status_line("Not Implemented", 501);
+    char full_path[512];
+    snprintf(full_path, sizeof(full_path), "%s", request.request_line.path + 1);
+
     generated_header = header_generator("Content-Type", "plain text", 1);
-    strcpy(generated_body.data, "PUT not implemented yet");
+
+    FILE *file = fopen(full_path, "w");
+    if(!file){
+        generated_status_line = generate_response_status_line("Not Found", 404);
+        strcpy(generated_body.data, "couldn't open file for writing");
+        return generate_response(generated_status_line, generated_header, generated_body);
+    }
+
+    fprintf(file, "%s", request.body.data);
+    fclose(file);
+
+    generated_status_line = generate_response_status_line("OK", 200);
+    snprintf(generated_body.data, sizeof(generated_body.data),
+        "file '%s' updated", full_path);
     return generate_response(generated_status_line, generated_header, generated_body);
 }
 
