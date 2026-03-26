@@ -112,7 +112,7 @@ struct RESPONSE post_handler(struct REQUEST request){
 
     // build full path
     char full_path[512];
-    snprintf(full_path, sizeof(full_path), "%s", request.request_line.path + 1);
+    snprintf(full_path, sizeof(full_path), "./assets/%s", request.request_line.path + 1);
     printf("final path for fopen: '%s'\n", full_path);
 
     generated_headers = header_generator("Content-Type", "plain text", 1);
@@ -193,7 +193,7 @@ struct RESPONSE put_handler(struct REQUEST request){
     struct BODY generated_body;
 
     char full_path[512];
-    snprintf(full_path, sizeof(full_path), "%s", request.request_line.path + 1);
+    snprintf(full_path, sizeof(full_path), "./assets/%s", request.request_line.path + 1);
 
     generated_header = header_generator("Content-Type", "plain text", 1);
 
