@@ -1,11 +1,6 @@
 # http_c
 A lightweight HTTP server written in C from scratch. Listens on port 8080, parses incoming HTTP requests, and routes them to the appropriate handler.
 
-# PREVIEW
-/ route render:
-<video src="/showcase/Screencast from 2026-03-26 16-44-01.webm" controls width="480"></video>
-penger from: https://github.com/tsoding/formula
-
 ## Build and Run
 make
 ./server
@@ -13,21 +8,23 @@ make
 ## Features
 - Listens on 0.0.0.0:8080
 - Routes GET, POST, PUT, DELETE requests
-- GET — reads and returns a file from the files/ directory
-- POST — creates/appends to a file.
-- PUT and DELETE — returns 501 Not Implemented (coming soon)
+- GET — serves static files from assets/, routes / to index.html
+- POST — creates or appends to a file in assets/
+- PUT — overwrites a file in assets/
+- DELETE — clears a file in assets/
 - Returns proper HTTP status codes: 200, 201, 403, 404, 405, 500
-**note: the static files are in /assets**
+
 ## Project Layout
 - server.c — socket setup, accept loop, request parsing, response serialization
 - handlers/req_handler.c — HTTP request parsing into structs
 - handlers/res_handler.c — request routing and response generation
+- handlers/routing.c — static file routing with content-type detection
 - handlers/header_handler.c — HTTP header generation
 - handlers/response_status_line_handler.c — status line generation
 - include/ — shared data structures (request, response, header, body, status line)
-- files/ — directory where server reads and writes files
+- assets/ — static files served by the server
 - Makefile — build and clean targets
-- assets/ contains static files..
+
 ## Quick Test
 ```bash
 # GET root
@@ -38,8 +35,13 @@ curl -X POST http://localhost:8080/test.txt -d "hello!"
 
 # GET the file back
 curl http://localhost:8080/test.txt
+
+# PUT (overwrite) a file
+curl -X PUT http://localhost:8080/test.txt -d "overwritten!"
+
+# DELETE (clear) a file
+curl -X DELETE http://localhost:8080/test.txt
 ```
 
 ## TODO
-- [ ] make it handle many requests using threads or fork().
-- [ ] add static file routing.
+- [ ] handle concurrent requests using threads or fork()

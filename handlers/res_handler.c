@@ -35,7 +35,7 @@ struct RESPONSE handle_response(struct REQUEST request){
     }
     else if(strcmp(request_method, "PUT")==0){
         //return put_handler(request);
-        return routing(request);
+        return get_handler(request);
     }
     else {
         struct STATUS_LINE generated_status_line;
@@ -60,67 +60,10 @@ struct RESPONSE generate_response(struct STATUS_LINE status_line, struct HEADER 
 }
 
 struct RESPONSE get_handler(struct REQUEST request){
-    struct REQUEST_LINE *request_line = &request.request_line;
-
-    struct STATUS_LINE generated_status_line;
-    struct HEADER generated_header;
-    struct BODY generated_body;
-
-    /* Serve files from ./assets. Root ("/") maps to ./assets/index.html */
-    char full_path[512];
-    char *req_path = request_line->path;
-
-    if(req_path[0] == '/') req_path++;
-
-    if(req_path[0] == '\0')
-        snprintf(full_path, sizeof(full_path), "./assets/index.html");
-    else
-        snprintf(full_path, sizeof(full_path), "./assets/%s", req_path);
-
-    /* Basic content-type detection */
-    char *ext = strrchr(full_path, '.');
-    if(ext && strcmp(ext, ".html") == 0)
-        generated_header = header_generator("Content-Type", "text/html", 1);
-    else if(ext && strcmp(ext, ".js") == 0)
-        generated_header = header_generator("Content-Type", "application/javascript", 1);
-    else if(ext && strcmp(ext, ".css") == 0)
-        generated_header = header_generator("Content-Type", "text/css", 1);
-    else
-        generated_header = header_generator("Content-Type", "plain text", 1);
-
-    generated_status_line = generate_response_status_line("OK", 200);
-
-    FILE *file = fopen(full_path, "r");
-    if(!file){
-        generated_status_line = generate_response_status_line("Not Found", 404);
-        strcpy(generated_body.data, "file not found, try same api with post!");
-        return generate_response(generated_status_line, generated_header, generated_body);
+    if(strcmp(request.request_line.path, "/") == 0){
+        strcpy(request.request_line.path, "/index.html");
     }
-
-    fseek(file, 0, SEEK_END);
-    long filesize = ftell(file);
-    rewind(file);
-
-    if((long)sizeof(generated_body.data) < filesize){
-        filesize = (long)sizeof(generated_body.data);
-    }
-
-    char *buffer = malloc(filesize + 1);
-    if(!buffer){
-        fclose(file);
-        generated_status_line = generate_response_status_line("Internal Server Error", 500);
-        strcpy(generated_body.data, "out of memory");
-        return generate_response(generated_status_line, generated_header, generated_body);
-    }
-
-    size_t read_size = fread(buffer, 1, filesize, file);
-    buffer[read_size] = '\0';
-    strncpy(generated_body.data, buffer, sizeof(generated_body.data) - 1);
-    generated_body.data[sizeof(generated_body.data) - 1] = '\0';
-    free(buffer);
-    fclose(file);
-
-    return generate_response(generated_status_line, generated_header, generated_body);
+    return routing(request);
 }
 
 struct RESPONSE post_handler(struct REQUEST request){
