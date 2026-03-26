@@ -9,10 +9,10 @@ make
 - Listens on 0.0.0.0:8080
 - Routes GET, POST, PUT, DELETE requests
 - GET — reads and returns a file from the files/ directory
-- POST — creates/appends to a file in the git repository folder and returns its contents.
+- POST — creates/appends to a file.
 - PUT and DELETE — returns 501 Not Implemented (coming soon)
 - Returns proper HTTP status codes: 200, 201, 403, 404, 405, 500
-
+**note: the static files are in /assets**
 ## Project Layout
 - server.c — socket setup, accept loop, request parsing, response serialization
 - handlers/req_handler.c — HTTP request parsing into structs
@@ -22,7 +22,7 @@ make
 - include/ — shared data structures (request, response, header, body, status line)
 - files/ — directory where server reads and writes files
 - Makefile — build and clean targets
-
+- assets/ contains static files..
 ## Quick Test
 ```bash
 # GET root
