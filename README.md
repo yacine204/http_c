@@ -9,7 +9,7 @@ make
 - Listens on 0.0.0.0:8080
 - Routes GET, POST, PUT, DELETE requests
 - GET — reads and returns a file from the files/ directory
-- POST — creates/appends to a file in files/ and returns its contents, (notice: the path u give in the command is the path where the file is going to be created in).
+- POST — creates/appends to a file in the git repository folder and returns its contents.
 - PUT and DELETE — returns 501 Not Implemented (coming soon)
 - Returns proper HTTP status codes: 200, 201, 403, 404, 405, 500
 
