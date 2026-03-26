@@ -1,26 +1,36 @@
 # http_c
-
-Tiny C HTTP server that accepts a single connection at a time on port 8080, parses the incoming HTTP request, and returns a fixed plain-text response.
+A lightweight HTTP server written in C from scratch. Listens on port 8080, parses incoming HTTP requests, and routes them to the appropriate handler.
 
 ## Build and Run
-
-```
 make
 ./server
-```
 
-- Listens on `0.0.0.0:8080`.
-- Sends `HTTP/1.1 200 OK` with a short text body (sends body rigth back at u if u included one).
+## Features
+- Listens on 0.0.0.0:8080
+- Routes GET, POST, PUT, DELETE requests
+- GET — reads and returns a file from the files/ directory
+- POST — creates/appends to a file in files/ and returns its contents, (notice: the path u give in the command is the path where the file is going to be created in).
+- PUT and DELETE — returns 501 Not Implemented (coming soon)
+- Returns proper HTTP status codes: 200, 201, 403, 404, 405, 500
 
 ## Project Layout
-
-- server.c — socket setup, accept loop, response send.
-- handlers/req_handler.c — naive HTTP request parsing into structs.
-- include/request.h — request data structures shared across files.
-- MakeFile — simple build and clean targets.
+- server.c — socket setup, accept loop, request parsing, response serialization
+- handlers/req_handler.c — HTTP request parsing into structs
+- handlers/res_handler.c — request routing and response generation
+- handlers/header_handler.c — HTTP header generation
+- handlers/response_status_line_handler.c — status line generation
+- include/ — shared data structures (request, response, header, body, status line)
+- files/ — directory where server reads and writes files
+- Makefile — build and clean targets
 
 ## Quick Test
+```bash
+# GET root
+curl http://localhost:8080/
 
-```
-curl -v http://localhost:8080/ -d "hello"
+# POST a file
+curl -X POST http://localhost:8080/test.txt -d "hello!"
+
+# GET the file back
+curl http://localhost:8080/test.txt
 ```
