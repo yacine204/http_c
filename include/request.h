@@ -16,6 +16,7 @@ struct REQUEST {
     struct REQUEST_LINE request_line;
     struct HEADER headers_section[32];
     struct BODY body;
+    int header_count; 
 };
 
 struct REQUEST parse_request(char *buffer);

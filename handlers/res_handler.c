@@ -214,12 +214,20 @@ struct RESPONSE put_handler(struct REQUEST request){
 }
 
 struct RESPONSE delete_handler(struct REQUEST request){
+
     struct STATUS_LINE generated_status_line;
     struct HEADER generated_header;
     struct BODY generated_body;
 
-    generated_status_line = generate_response_status_line("Not Implemented", 501);
-    generated_header = header_generator("Content-Type", "plain text", 1);
-    strcpy(generated_body.data, "DELETE not implemented yet");
-    return generate_response(generated_status_line, generated_header, generated_body);
+    strcpy(request.body.data," ");
+    struct RESPONSE generated_response;
+    generated_response =  put_handler(request);
+    float status_type = generated_response.response_status_line.response_status/100;
+    // only return it direcrly if its an informational status
+    if(status_type!=2 || status_type!=1){
+        // assume its 4..
+        strcpy(generated_body.data,"unauthorized");
+    }
+    return generated_response;
+    
 }
